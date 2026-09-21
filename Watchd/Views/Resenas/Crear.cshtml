@@ -1,0 +1,22 @@
+﻿@model Watchd.Models.Visualizacion
+
+@{
+    ViewData["Title"] = "Crear Visualización";
+}
+
+<h1>Registrar Película</h1>
+<p>Agrega una película a tu diario indicando el título y tu calificación.</p>
+
+<form asp-action="Crear">
+    <div class="mb-3">
+        <label asp-for="TituloPelicula" class="form-label">Título de la Película</label>
+        <input asp-for="TituloPelicula" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Calificacion" class="form-label">Calificación (1 al 5)</label>
+        <input asp-for="Calificacion" type="number" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
