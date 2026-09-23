@@ -7,16 +7,31 @@
 <h1>Registrar Película</h1>
 <p>Agrega una película a tu diario indicando el título y tu calificación.</p>
 
-<form asp-action="Crear">
-    <div class="mb-3">
-        <label asp-for="TituloPelicula" class="form-label">Título de la Película</label>
-        <input asp-for="TituloPelicula" class="form-control" />
-    </div>
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Crear">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="mb-3">
-        <label asp-for="Calificacion" class="form-label">Calificación (1 al 5)</label>
-        <input asp-for="Calificacion" type="number" class="form-control" />
-    </div>
+            <div class="mb-3">
+                <label asp-for="TituloPelicula" class="form-label"></label>
+                <input asp-for="TituloPelicula" class="form-control" placeholder="Ej. Dune 2 " />
+                <span asp-validation-for="TituloPelicula" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Calificacion" class="form-label"></label>
+                <input asp-for="Calificacion" class="form-control" placeholder="De 1 a 5" />
+                <span asp-validation-for="Calificacion" class="text-danger"></span>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Enviar</button>
-</form>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
