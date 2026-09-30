@@ -8,7 +8,7 @@ namespace Watchd.Models
 
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "El usuario debe tener entre 3 y 50 caracteres.")]
-        [Display(Name = "Nombre de Usuario (Username)")]
+        [Display(Name = "Nombre")]
         public string Username { get; set; }
 
         [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
@@ -19,5 +19,9 @@ namespace Watchd.Models
         [StringLength(500, ErrorMessage = "La biografía no puede superar los 500 caracteres.")]
         [Display(Name = "Biografía (Opcional)")]
         public string Bio { get; set; }
+
+
+        [Required(ErrorMessage = "Debes seleccionar un Rol.")]
+        public string Rol { get; set; }
     }
 }
