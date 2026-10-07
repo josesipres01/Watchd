@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Watchd.Models
 {
@@ -21,7 +22,23 @@ namespace Watchd.Models
         public string Bio { get; set; }
 
 
-        [Required(ErrorMessage = "Debes seleccionar un Rol.")]
-        public string Rol { get; set; }
+        // Relación con la tabla Tipos_Usuario
+        [Display(Name = "Tipo de Usuario")]
+        public int IdTipoUsuario { get; set; }
+
+        [NotMapped]
+        public TipoUsuario TipoUsuario { get; set; }
+
+        [Required(ErrorMessage = "La contraseña es obligatoria.")]
+        [DataType(DataType.Password)]
+        [StringLength(200, MinimumLength = 6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres.")]
+        [Display(Name = "Contraseña")]
+        public string Contrasena { get; set; }
+
+        [NotMapped]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirmar Contraseña")]
+        [Compare("Contrasena", ErrorMessage = "Las contraseñas no coinciden.")]
+        public string ConfirmPassword { get; set; }
     }
 }

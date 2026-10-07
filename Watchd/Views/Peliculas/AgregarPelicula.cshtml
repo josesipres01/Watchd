@@ -1,0 +1,72 @@
+@model Watchd.Models.Pelicula
+@{
+    ViewData["Title"] = "Agregar Película";
+}
+
+<h1>Agregar Película</h1>
+<p>Agrega una película al catálogo.</p>
+
+<form asp-action="AgregarPelicula" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="TmdbId" class="form-label"></label>
+        <input asp-for="TmdbId" class="form-control" type="number" />
+        <span asp-validation-for="TmdbId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Sinopsis" class="form-label"></label>
+        <textarea asp-for="Sinopsis" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Sinopsis" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Director" class="form-label"></label>
+        <input asp-for="Director" class="form-control" />
+        <span asp-validation-for="Director" class="text-danger"></span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="AnoLanzamiento" class="form-label"></label>
+            <input asp-for="AnoLanzamiento" class="form-control" type="number" />
+            <span asp-validation-for="AnoLanzamiento" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Duracion" class="form-label"></label>
+            <input asp-for="Duracion" class="form-control" type="number" />
+            <span asp-validation-for="Duracion" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Poster" class="form-label"></label>
+            <input asp-for="Poster" class="form-control" />
+            <span asp-validation-for="Poster" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="CalificacionPromedio" class="form-label"></label>
+            <input asp-for="CalificacionPromedio" class="form-control" step="0.01" />
+            <span asp-validation-for="CalificacionPromedio" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="TotalReviews" class="form-label"></label>
+            <input asp-for="TotalReviews" class="form-control" type="number" />
+            <span asp-validation-for="TotalReviews" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Agregar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

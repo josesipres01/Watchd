@@ -1,8 +1,16 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Página Inicial";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Página Inicial</h1>
+    @if (TempData["UsuarioConectado"] != null)
+    {
+        <p>Bienvenido, <strong>@TempData["UsuarioConectado"]</strong>!</p>
+    }
+    else
+    {
+        <p>Bienvenido a Watchd. Puedes <a asp-controller="Usuarios" asp-action="Registro">registrarte</a> o <a asp-controller="Usuarios" asp-action="Login">iniciar sesión</a>.</p>
+    }
+
 </div>
