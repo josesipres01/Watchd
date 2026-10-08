@@ -15,6 +15,69 @@ namespace Watchd.Controllers
         }
 
         [HttpGet]
+        public IActionResult Catalogo(string buscar = null, string ordenarPor = null)
+        {
+            using var connection = new SqlConnection(connectionString);
+
+            string query = @"SELECT Id, 
+                                    TMDB_ID AS TmdbId, 
+                                    Titulo, 
+                                    Sinopsis, 
+                                    Director, 
+                                    [Año_Lanzamiento] AS AnoLanzamiento, 
+                                    Duracion, 
+                                    Poster, 
+                                    Calificacion_Promedio AS CalificacionPromedio, 
+                                    Total_Reviews AS TotalReviews 
+                             FROM Peliculas 
+                             WHERE (@Buscar IS NULL OR @Buscar = '' 
+                                    OR Titulo LIKE '%' + @Buscar + '%' 
+                                    OR Director LIKE '%' + @Buscar + '%')";
+
+            query += ordenarPor switch
+            {
+                "recientes" => " ORDER BY [Año_Lanzamiento] DESC, Id DESC",
+                "antiguos" => " ORDER BY [Año_Lanzamiento] ASC, Id ASC",
+                "calificacion" => " ORDER BY Calificacion_Promedio DESC",
+                "titulo" => " ORDER BY Titulo ASC",
+                _ => " ORDER BY Id DESC"
+            };
+
+            var peliculas = connection.Query<Pelicula>(query, new { Buscar = string.IsNullOrWhiteSpace(buscar) ? null : buscar.Trim() }).ToList();
+
+            ViewBag.Buscar = buscar;
+            ViewBag.OrdenarPor = ordenarPor;
+
+            return View(peliculas);
+        }
+
+        [HttpGet]
+        public IActionResult Detalle(int id)
+        {
+            using var connection = new SqlConnection(connectionString);
+            string query = @"SELECT Id, 
+                                    TMDB_ID AS TmdbId, 
+                                    Titulo, 
+                                    Sinopsis, 
+                                    Director, 
+                                    [Año_Lanzamiento] AS AnoLanzamiento, 
+                                    Duracion, 
+                                    Poster, 
+                                    Calificacion_Promedio AS CalificacionPromedio, 
+                                    Total_Reviews AS TotalReviews 
+                             FROM Peliculas 
+                             WHERE Id = @Id";
+
+            var pelicula = connection.QueryFirstOrDefault<Pelicula>(query, new { Id = id });
+            if (pelicula == null)
+            {
+                return NotFound();
+            }
+
+            return View(pelicula);
+        }
+
+        [HttpGet]
         public IActionResult AgregarPelicula()
         {
             return View();
@@ -27,22 +90,15 @@ namespace Watchd.Controllers
 
             using var connection = new SqlConnection(connectionString);
 
-            // Si se proporciona TMDB id, comprobar duplicado por TMDB_ID
-            if (pelicula.TmdbId.HasValue)
+            if (pelicula.TmdbId.HasValue && Existe(connection, "Peliculas", "TMDB_ID", pelicula.TmdbId.Value))
             {
-                var existeTmdb = connection.QueryFirstOrDefault<int>("SELECT COUNT(1) FROM Peliculas WHERE TMDB_ID = @TmdbId", new { TmdbId = pelicula.TmdbId.Value });
-                if (existeTmdb > 0)
-                {
-                    ModelState.AddModelError("TmdbId", "Ya existe una película con ese TMDB ID.");
-                    return View(pelicula);
-                }
+                ModelState.AddModelError("TmdbId", "Ya existe una película con ese TMDB ID.");
+                return View(pelicula);
             }
 
             // Normalizar y comprobar duplicados por título (insensible a mayúsculas/espacios)
             var tituloNormalizado = pelicula.Titulo?.Trim().ToLower();
-            var existe = connection.QueryFirstOrDefault<int>("SELECT COUNT(1) FROM Peliculas WHERE LOWER(LTRIM(RTRIM(Titulo))) = @Titulo", new { Titulo = tituloNormalizado });
-
-            if (existe > 0)
+            if (Existe(connection, "Peliculas", "LOWER(LTRIM(RTRIM(Titulo)))", tituloNormalizado))
             {
                 ModelState.AddModelError("Titulo", "Ya existe una película con ese título.");
                 return View(pelicula);
@@ -66,7 +122,14 @@ namespace Watchd.Controllers
 
             connection.Execute(insert, pelicula);
 
-            return View();
+            TempData["Exito"] = $"¡La película '{pelicula.Titulo}' se agregó correctamente al catálogo!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        private static bool Existe(SqlConnection connection, string tabla, string columna, object valor)
+        {
+            var query = $"SELECT COUNT(1) FROM {tabla} WHERE {columna} = @Valor";
+            return connection.QueryFirstOrDefault<int>(query, new { Valor = valor }) > 0;
         }
     }
 }

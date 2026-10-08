@@ -110,33 +110,22 @@ namespace Watchd.Controllers
 
             using (var connection = new SqlConnection(connectionString))
             {
-                string queryValidacion = "SELECT Username, Email FROM Usuarios WHERE Username = @Username OR Email = @Email";
+                var usernameNormalizado = usuario.Username?.ToLower();
+                var emailNormalizado = usuario.Email?.ToLower();
 
-                var duplicados = connection.Query(queryValidacion, usuario).ToList();
-
-                if (duplicados.Any())
+                if (Existe(connection, "Usuarios", "LOWER(Username)", usernameNormalizado))
                 {
-                    bool hayErrores = false;
+                    ModelState.AddModelError("Username", "Este nombre de usuario ya está en uso. Elige otro.");
+                }
 
-                    foreach (var dup in duplicados)
-                    {
-                        if (dup.Username.ToLower() == usuario.Username.ToLower())
-                        {
-                            ModelState.AddModelError("Username", "Este nombre de usuario ya está en uso. Elige otro.");
-                            hayErrores = true;
-                        }
+                if (Existe(connection, "Usuarios", "LOWER(Email)", emailNormalizado))
+                {
+                    ModelState.AddModelError("Email", "Este correo electrónico ya está registrado.");
+                }
 
-                        if (dup.Email.ToLower() == usuario.Email.ToLower())
-                        {
-                            ModelState.AddModelError("Email", "Este correo electrónico ya está registrado.");
-                            hayErrores = true;
-                        }
-                    }
-
-                    if (hayErrores)
-                    {
-                        return View(usuario);
-                    }
+                if (ModelState.ErrorCount > 0)
+                {
+                    return View(usuario);
                 }
 
                 string queryInsert = @"INSERT INTO Usuarios (Username, Email, Bio, contrasena, IdTipoUsuario) 
@@ -149,6 +138,12 @@ namespace Watchd.Controllers
             }
 
             return RedirectToAction("Index", "Home");
+        }
+
+        private static bool Existe(SqlConnection connection, string tabla, string columna, object valor)
+        {
+            var query = $"SELECT COUNT(1) FROM {tabla} WHERE {columna} = @Valor";
+            return connection.QueryFirstOrDefault<int>(query, new { Valor = valor }) > 0;
         }
 
         // Generar hash usando PBKDF2 (salt + hash en base64 separados por ':')
