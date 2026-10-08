@@ -46,7 +46,7 @@
         </div>
         <div class="col-md-4 mb-3">
             <label asp-for="Poster" class="form-label"></label>
-            <input asp-for="Poster" class="form-control" />
+            <input asp-for="Poster" class="form-control" placeholder="URL de la imagen (opcional)" />
             <span asp-validation-for="Poster" class="text-danger"></span>
         </div>
     </div>
@@ -64,7 +64,10 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Agregar</button>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver al Catálogo</a>
+    </div>
 </form>
 
 @section Scripts {
